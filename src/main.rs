@@ -4,21 +4,30 @@ use termion::event::Key;
 use termion::raw::IntoRawMode;
 use termion::screen::AlternateScreen;
 use tui::backend::TermionBackend;
-use tui::layout::{Constraint, Direction, Layout};
+use tui::layout::{Constraint, Layout};
 use tui::style::{Color, Style};
-use tui::widgets::{Block, Borders, Clear, Paragraph, Text};
+use tui::widgets::{Paragraph, Text};
 use tui::Terminal;
 
 mod event;
+mod file_manager;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let stdout = io::stdout().into_raw_mode()?;
     let stdout = AlternateScreen::from(stdout);
     let backend = TermionBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-    terminal.hide_cursor()?;
 
     let events = event::Events::new(Key::Char('q'));
+
+    let mut filer = file_manager::FileManager::new();
+    filer.open("src/main.rs")?;
+
+    let loaded = filer
+        .read_n_lines(20)?
+        .into_iter()
+        .map(|s| s.replace(" ", "\u{2800}"))
+        .collect::<Vec<_>>();
 
     loop {
         terminal.draw(|mut f| {
@@ -33,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 )
                 .split(f.size());
 
-            let text = [Text::raw("This is a line \nPiyo piyo\n\nfooo")];
+            let text = loaded.iter().map(|v| Text::raw(v)).collect::<Vec<_>>();
             let paragraph = Paragraph::new(text.iter()).wrap(true);
             f.render_widget(paragraph, chunks[0]);
 
