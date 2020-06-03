@@ -5,7 +5,7 @@ use termion::event::Key;
 use termion::raw::IntoRawMode;
 use termion::screen::AlternateScreen;
 use tui::backend::TermionBackend;
-use tui::layout::{Constraint, Layout};
+use tui::layout::{Constraint, Layout, Rect};
 use tui::style::{Color, Style};
 use tui::widgets::{Paragraph, Text};
 use tui::Terminal;
@@ -31,6 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .collect::<Vec<_>>();
 
     let mut pos = (1, 1);
+    let mut editor_area = Rect::default();
 
     loop {
         terminal.draw(|mut f| {
@@ -48,6 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let text = loaded.iter().map(|v| Text::raw(v)).collect::<Vec<_>>();
             let paragraph = Paragraph::new(text.iter()).wrap(true);
             f.render_widget(paragraph, chunks[0]);
+            editor_area = chunks[0];
 
             let text = [Text::raw("= TXT EDIT =")];
             let paragraph = Paragraph::new(text.iter())
@@ -63,10 +65,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         if let event::Event::Input(input) = events.next()? {
             match input {
                 Key::Char('q') => break,
-                Key::Up if pos.1 > 1 => pos.1 -= 1,
-                Key::Down => pos.1 += 1,
                 Key::Left if pos.0 > 1 => pos.0 -= 1,
-                Key::Right => pos.0 += 1,
+                Key::Right if pos.0 < editor_area.width => pos.0 += 1,
+                Key::Up if pos.1 > 1 => pos.1 -= 1,
+                Key::Down if pos.1 < editor_area.height => pos.1 += 1,
                 _ => (),
             }
         }

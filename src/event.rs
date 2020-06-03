@@ -45,7 +45,7 @@ impl Events {
         let tick_handle = {
             thread::spawn(move || loop {
                 tx.send(Event::Tick).unwrap();
-                thread::sleep(Duration::from_millis(250));
+                thread::sleep(Duration::from_millis(16));
             })
         };
 
