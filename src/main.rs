@@ -1,5 +1,6 @@
 use std::error::Error;
-use std::io;
+use std::io::{self, Write};
+use termion::cursor::Goto;
 use termion::event::Key;
 use termion::raw::IntoRawMode;
 use termion::screen::AlternateScreen;
@@ -54,6 +55,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             f.render_widget(Paragraph::new([Text::raw("")].iter()), chunks[2]);
         })?;
+
+        write!(terminal.backend_mut(), "{}", Goto(1, 1))?;
 
         if let event::Event::Input(input) = events.next()? {
             if let Key::Char('q') = input {
