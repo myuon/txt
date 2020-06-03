@@ -30,6 +30,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|s| s.replace(" ", "\u{2800}"))
         .collect::<Vec<_>>();
 
+    let mut pos = (1, 1);
+
     loop {
         terminal.draw(|mut f| {
             let chunks = Layout::default()
@@ -56,11 +58,16 @@ fn main() -> Result<(), Box<dyn Error>> {
             f.render_widget(Paragraph::new([Text::raw("")].iter()), chunks[2]);
         })?;
 
-        write!(terminal.backend_mut(), "{}", Goto(1, 1))?;
+        write!(terminal.backend_mut(), "{}", Goto(pos.0, pos.1))?;
 
         if let event::Event::Input(input) = events.next()? {
-            if let Key::Char('q') = input {
-                break;
+            match input {
+                Key::Char('q') => break,
+                Key::Up if pos.1 > 1 => pos.1 -= 1,
+                Key::Down => pos.1 += 1,
+                Key::Left if pos.0 > 1 => pos.0 -= 1,
+                Key::Right => pos.0 += 1,
+                _ => (),
             }
         }
     }
