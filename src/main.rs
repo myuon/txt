@@ -10,6 +10,7 @@ use tui::style::{Color, Style};
 use tui::widgets::{Paragraph, Text};
 use tui::Terminal;
 
+mod editor;
 mod event;
 mod file_manager;
 
@@ -30,8 +31,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|s| s.replace(" ", "\u{2800}"))
         .collect::<Vec<_>>();
 
-    let mut pos = (1, 1);
-    let mut editor_area = Rect::default();
+    let mut editor = editor::Editor::new();
+    editor.set_page(loaded.clone());
 
     loop {
         terminal.draw(|mut f| {
@@ -49,7 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let text = loaded.iter().map(|v| Text::raw(v)).collect::<Vec<_>>();
             let paragraph = Paragraph::new(text.iter()).wrap(true);
             f.render_widget(paragraph, chunks[0]);
-            editor_area = chunks[0];
+            editor.set_editor_size(chunks[0].width, chunks[0].height);
 
             let text = [Text::raw("= TXT EDIT =")];
             let paragraph = Paragraph::new(text.iter())
@@ -60,15 +61,16 @@ fn main() -> Result<(), Box<dyn Error>> {
             f.render_widget(Paragraph::new([Text::raw("")].iter()), chunks[2]);
         })?;
 
-        write!(terminal.backend_mut(), "{}", Goto(pos.0, pos.1))?;
+        let cursor = editor.get_cursor();
+        write!(terminal.backend_mut(), "{}", Goto(cursor.x, cursor.y))?;
 
         if let event::Event::Input(input) = events.next()? {
             match input {
                 Key::Char('q') => break,
-                Key::Left if pos.0 > 1 => pos.0 -= 1,
-                Key::Right if pos.0 < editor_area.width => pos.0 += 1,
-                Key::Up if pos.1 > 1 => pos.1 -= 1,
-                Key::Down if pos.1 < editor_area.height => pos.1 += 1,
+                Key::Left => editor.cursor_left(),
+                Key::Right => editor.cursor_right(),
+                Key::Up => editor.cursor_up(),
+                Key::Down => editor.cursor_down(),
                 _ => (),
             }
         }
