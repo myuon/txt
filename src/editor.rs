@@ -41,7 +41,7 @@ impl Editor {
     }
 
     pub fn cursor_down(&mut self) {
-        if self.cursor.y < self.height {
+        if self.cursor.y < self.height - 1 {
             self.cursor.y += 1;
         }
     }
@@ -53,7 +53,7 @@ impl Editor {
     }
 
     pub fn cursor_right(&mut self) {
-        if self.cursor.x < self.width {
+        if self.cursor.x < self.width - 1 {
             self.cursor.x += 1;
         }
     }

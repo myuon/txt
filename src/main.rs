@@ -5,7 +5,7 @@ use termion::event::Key;
 use termion::raw::IntoRawMode;
 use termion::screen::AlternateScreen;
 use tui::backend::TermionBackend;
-use tui::layout::{Constraint, Layout, Rect};
+use tui::layout::{Constraint, Layout};
 use tui::style::{Color, Style};
 use tui::widgets::{Paragraph, Text};
 use tui::Terminal;
@@ -62,7 +62,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         })?;
 
         let cursor = editor.get_cursor();
-        write!(terminal.backend_mut(), "{}", Goto(cursor.x, cursor.y))?;
+        write!(
+            terminal.backend_mut(),
+            "{}",
+            Goto(cursor.x + 1, cursor.y + 1)
+        )?;
 
         if let event::Event::Input(input) = events.next()? {
             match input {
