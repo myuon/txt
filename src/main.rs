@@ -68,9 +68,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             Goto(cursor.x + 1, cursor.y + 1)
         )?;
 
-        if let event::Event::Input(input) = events.next()? {
+        while let event::Event::Input(input) = events.next()? {
             match input {
-                Key::Char('q') => break,
+                Key::Char('q') => return Ok(()),
                 Key::Left => editor.cursor_left(),
                 Key::Right => editor.cursor_right(),
                 Key::Up => editor.cursor_up(),
