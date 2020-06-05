@@ -31,7 +31,12 @@ impl Editor {
     }
 
     pub fn get_cursor(&self) -> Cursor {
-        self.cursor.clone()
+        let cursor = self.cursor.clone();
+
+        Cursor {
+            x: (cursor.x).min(self.text[self.cursor.y as usize].len() as u16 - 1),
+            y: cursor.y,
+        }
     }
 
     pub fn cursor_up(&mut self) {
