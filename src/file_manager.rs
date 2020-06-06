@@ -28,6 +28,9 @@ impl FileManager {
             vs.push(line);
         }
 
-        Ok(vs)
+        Ok(vs
+            .into_iter()
+            .map(|s| s.replace(" ", "\u{2800}"))
+            .collect::<Vec<_>>())
     }
 }

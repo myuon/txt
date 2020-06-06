@@ -36,12 +36,15 @@ impl Editor {
     pub fn load_file(&mut self, path: &str) -> Result<(), Box<dyn Error>> {
         self.file_manager.open(path)?;
         self.cursor.reset();
+        self.text = self.file_manager.read_n_lines(self.height as usize)?;
 
-        let lines = self.file_manager.read_n_lines(self.height as usize)?;
-        self.text = lines
-            .into_iter()
-            .map(|s| s.replace(" ", "\u{2800}"))
-            .collect::<Vec<_>>();
+        Ok(())
+    }
+
+    fn load_next_line(&mut self) -> Result<(), Box<dyn Error>> {
+        let mut lines = self.file_manager.read_n_lines(1)?;
+        self.text.remove(0);
+        self.text.push(lines.pop().unwrap());
 
         Ok(())
     }
@@ -74,10 +77,14 @@ impl Editor {
         }
     }
 
-    pub fn cursor_down(&mut self) {
-        if self.cursor.y < (self.height).min(self.text.len() as u16) {
+    pub fn cursor_down(&mut self) -> Result<(), Box<dyn Error>> {
+        if self.cursor.y < (self.height).min(self.text.len() as u16) - 1 {
             self.cursor.y += 1;
+        } else if self.cursor.y == self.text.len() as u16 - 1 {
+            self.load_next_line()?;
         }
+
+        Ok(())
     }
 
     pub fn cursor_left(&mut self) {

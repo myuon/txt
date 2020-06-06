@@ -70,7 +70,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Key::Left => editor.cursor_left(),
                 Key::Right => editor.cursor_right(),
                 Key::Up => editor.cursor_up(),
-                Key::Down => editor.cursor_down(),
+                Key::Down => editor.cursor_down()?,
                 _ => (),
             }
         }
