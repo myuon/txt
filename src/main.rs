@@ -22,17 +22,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let events = event::Events::new(Key::Char('q'));
 
-    let mut filer = file_manager::FileManager::new();
-    filer.open("src/main.rs")?;
-
-    let loaded = filer
-        .read_n_lines(20)?
-        .into_iter()
-        .map(|s| s.replace(" ", "\u{2800}"))
-        .collect::<Vec<_>>();
-
     let mut editor = editor::Editor::new();
-    editor.set_page(loaded.clone());
+    editor.set_editor_size(10, 10);
+    editor.load_file("src/main.rs")?;
 
     loop {
         terminal.draw(|mut f| {
@@ -47,7 +39,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 )
                 .split(f.size());
 
-            let text = loaded.iter().map(|v| Text::raw(v)).collect::<Vec<_>>();
+            let text = editor
+                .get_text_ref()
+                .iter()
+                .map(|t| Text::raw(t))
+                .collect::<Vec<_>>();
             let paragraph = Paragraph::new(text.iter()).wrap(true);
             f.render_widget(paragraph, chunks[0]);
             editor.set_editor_size(chunks[0].width, chunks[0].height);

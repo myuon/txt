@@ -1,7 +1,17 @@
+use crate::file_manager::FileManager;
+use std::error::Error;
+
 #[derive(Clone)]
 pub struct Cursor {
     pub x: u16,
     pub y: u16,
+}
+
+impl Cursor {
+    pub fn reset(&mut self) {
+        self.x = 0;
+        self.y = 0;
+    }
 }
 
 pub struct Editor {
@@ -9,6 +19,7 @@ pub struct Editor {
     text: Vec<String>,
     width: u16,
     height: u16,
+    file_manager: FileManager,
 }
 
 impl Editor {
@@ -18,11 +29,25 @@ impl Editor {
             text: Vec::new(),
             width: 0,
             height: 0,
+            file_manager: FileManager::new(),
         }
     }
 
-    pub fn set_page(&mut self, page: Vec<String>) {
-        self.text = page;
+    pub fn load_file(&mut self, path: &str) -> Result<(), Box<dyn Error>> {
+        self.file_manager.open(path)?;
+        self.cursor.reset();
+
+        let lines = self.file_manager.read_n_lines(self.height as usize)?;
+        self.text = lines
+            .into_iter()
+            .map(|s| s.replace(" ", "\u{2800}"))
+            .collect::<Vec<_>>();
+
+        Ok(())
+    }
+
+    pub fn get_text_ref(&self) -> &Vec<String> {
+        &self.text
     }
 
     pub fn set_editor_size(&mut self, width: u16, height: u16) {
@@ -34,7 +59,11 @@ impl Editor {
         let cursor = self.cursor.clone();
 
         Cursor {
-            x: (cursor.x).min(self.text[self.cursor.y as usize].len() as u16 - 1),
+            x: if self.text.len() == 0 {
+                0
+            } else {
+                (cursor.x).min(self.text[self.cursor.y as usize].len() as u16 - 1)
+            },
             y: cursor.y,
         }
     }
