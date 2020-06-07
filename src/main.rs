@@ -12,7 +12,9 @@ use tui::Terminal;
 
 mod editor;
 mod event;
+mod file_buffer;
 mod file_manager;
+mod line_buffer;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let stdout = io::stdout().into_raw_mode()?;
@@ -23,7 +25,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let events = event::Events::new(Key::Char('q'));
 
     let mut editor = editor::Editor::new();
-    editor.set_editor_size(10, 10);
     editor.load_file("src/main.rs")?;
 
     loop {
@@ -41,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let text = editor
                 .get_text_ref()
-                .iter()
+                .into_iter()
                 .map(|t| Text::raw(t))
                 .collect::<Vec<_>>();
             let paragraph = Paragraph::new(text.iter()).wrap(true);
