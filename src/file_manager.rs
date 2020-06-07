@@ -74,8 +74,26 @@ impl<T: Seek + BufRead> FlexReader<T> {
         }
 
         let len = s.len();
+        self.reader.seek(SeekFrom::Current(-(len as i64)))?;
 
         Ok((s, len))
+    }
+
+    pub fn read_lines_backward(&mut self, limit: i32) -> Result<Vec<String>, Box<dyn Error>> {
+        let mut ss = vec![];
+
+        for _ in 0..limit {
+            let (s, u) = self.read_line_backward()?;
+
+            // BOF
+            if u == 0 {
+                break;
+            }
+
+            ss.push(s);
+        }
+
+        Ok(ss)
     }
 
     pub fn seek_to_top(&mut self) -> Result<(), Box<dyn Error>> {
@@ -143,6 +161,27 @@ mod test {
             reader.seek_to_end().unwrap();
 
             assert_eq!(reader.read_line_backward().unwrap().0, r);
+        }
+    }
+
+    #[test]
+    fn read_lines_backward() {
+        let cases = vec![
+            ("", 2, vec![]),
+            ("aaaaaa", 1, vec!["aaaaaa"]),
+            (
+                "aaaaaa\nbbbbb\nccc\ndd",
+                4,
+                vec!["aaaaaa\n", "bbbbb\n", "ccc\n", "dd"],
+            ),
+        ];
+
+        for (s, i, r) in cases {
+            let reader = Cursor::new(s);
+            let mut reader = FlexReader::from_reader(reader);
+            reader.seek_to_end().unwrap();
+
+            assert_eq!(reader.read_lines_backward(i).unwrap(), r);
         }
     }
 }
