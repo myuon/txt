@@ -13,7 +13,6 @@ use tui::Terminal;
 mod editor;
 mod event;
 mod file_buffer;
-mod file_manager;
 mod line_buffer;
 
 fn main() -> Result<(), Box<dyn Error>> {
