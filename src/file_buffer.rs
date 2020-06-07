@@ -23,8 +23,15 @@ impl FileBuffer {
 
         let mut file_buffer = vec![];
 
-        let mut buf = String::new();
-        while reader.read_line(&mut buf)? > 0 {
+        loop {
+            let mut buf = String::new();
+            reader.read_line(&mut buf)?;
+
+            // EOF
+            if buf.len() == 0 {
+                break;
+            }
+
             file_buffer.push(LineBuffer::new(&buf));
         }
 

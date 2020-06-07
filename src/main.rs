@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .split(f.size());
 
             let text = editor
-                .get_text_ref()
+                .get_text()
                 .into_iter()
                 .map(|t| Text::raw(t))
                 .collect::<Vec<_>>();
