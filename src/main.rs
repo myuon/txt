@@ -1,3 +1,4 @@
+use std::env;
 use std::error::Error;
 use std::io::{self, Write};
 use termion::cursor::Goto;
@@ -16,6 +17,8 @@ mod file_buffer;
 mod line_buffer;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let args = env::args().collect::<Vec<_>>();
+
     let stdout = io::stdout().into_raw_mode()?;
     let stdout = AlternateScreen::from(stdout);
     let backend = TermionBackend::new(stdout);
@@ -24,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let events = event::Events::new(Key::Char('q'));
 
     let mut editor = editor::Editor::new();
-    editor.load_file("src/main.rs")?;
+    editor.load_file(&args[1])?;
 
     loop {
         terminal.draw(|mut f| {
