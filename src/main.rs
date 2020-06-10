@@ -14,6 +14,7 @@ use tui::Terminal;
 mod editor;
 mod event;
 mod file_buffer;
+mod gap_buffer;
 mod line_buffer;
 
 fn main() -> Result<(), Box<dyn Error>> {
