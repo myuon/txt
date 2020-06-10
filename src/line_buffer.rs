@@ -1,11 +1,13 @@
+use crate::gap_buffer::GapBuffer;
+
 pub struct LineBuffer {
-    buffer: Vec<char>,
+    buffer: GapBuffer<char>,
 }
 
 impl LineBuffer {
-    pub fn new(from: &str) -> Self {
+    pub fn new(s: &str) -> Self {
         LineBuffer {
-            buffer: from.chars().collect(),
+            buffer: GapBuffer::from(s.chars().collect()),
         }
     }
 
@@ -14,11 +16,11 @@ impl LineBuffer {
     }
 
     pub fn remove(&mut self, index: usize) {
-        self.buffer.remove(index);
+        self.buffer.delete(index);
     }
 
     pub fn to_string(&self) -> String {
-        self.buffer.iter().collect()
+        self.buffer.as_vec().iter().collect()
     }
 
     pub fn len(&self) -> usize {

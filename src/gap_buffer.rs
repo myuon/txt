@@ -114,6 +114,10 @@ impl<T: Copy + std::fmt::Debug + Default> GapBuffer<T> {
         .concat()
     }
 
+    pub fn len(&self) -> usize {
+        (0..self.gap_index).len() + (self.right_index..self.buffer.len()).len()
+    }
+
     pub fn operate(&mut self, index: usize, op: Operation<T>) {
         match op {
             Operation::Insert(x) => self.insert(index, x),
