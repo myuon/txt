@@ -95,12 +95,16 @@ impl Editor {
     }
 
     pub fn cursor_left(&mut self) {
-        if self.cursor.x > 0 {
-            self.cursor.x -= 1;
+        let cursor = self.get_cursor();
+
+        if cursor.x > 0 {
+            self.cursor.x = cursor.x - 1;
         }
     }
 
     pub fn cursor_right(&mut self) {
-        self.cursor.x += 1;
+        if (self.cursor.x as usize) < self.file_buffer.len_at(self.cursor.y as usize) {
+            self.cursor.x += 1;
+        }
     }
 }
