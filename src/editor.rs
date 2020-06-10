@@ -52,11 +52,13 @@ impl Editor {
     }
 
     pub fn set_editor_size(&mut self, width: u16, height: u16) {
-        self.width = width;
-        self.height = height;
+        if self.width != width || self.height != height {
+            self.width = width;
+            self.height = height;
 
-        self.index_start = 0;
-        self.index_end = height as usize;
+            self.index_start = 0;
+            self.index_end = height as usize;
+        }
     }
 
     pub fn get_cursor(&self) -> Cursor {
@@ -69,13 +71,25 @@ impl Editor {
     }
 
     pub fn cursor_up(&mut self) {
+        if self.cursor.y == 0 && self.index_start > 0 {
+            self.index_start -= 1;
+            self.index_end -= 1;
+        }
+
         if self.cursor.y > 0 {
             self.cursor.y -= 1;
         }
     }
 
     pub fn cursor_down(&mut self) -> Result<(), Box<dyn Error>> {
-        self.cursor.y += 1;
+        if self.cursor.y == self.height - 1 && self.index_end < self.file_buffer.len() {
+            self.index_start += 1;
+            self.index_end += 1;
+        }
+
+        if self.cursor.y < self.height - 1 {
+            self.cursor.y += 1;
+        }
 
         Ok(())
     }

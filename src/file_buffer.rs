@@ -55,6 +55,10 @@ impl FileBuffer {
         self.buffer[i].len()
     }
 
+    pub fn len(&self) -> usize {
+        self.buffer.len()
+    }
+
     pub fn write(&self) -> Result<(), Box<dyn Error>> {
         let mut writer = BufWriter::new(File::open(&self.file_path)?);
         for line in &self.buffer {
