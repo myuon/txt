@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let backend = TermionBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let events = event::Events::new(Key::Char('q'));
+    let events = event::Events::new(Key::Esc);
 
     let mut editor = editor::Editor::new();
     editor.load_file(&args[1])?;
@@ -67,9 +67,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             Goto(cursor.x + 1, cursor.y + 1)
         )?;
 
+        if events.exit() {
+            break;
+        }
+
         while let event::Event::Input(input) = events.next()? {
             match input {
-                Key::Char('q') => return Ok(()),
                 Key::Left => editor.cursor_left(),
                 Key::Right => editor.cursor_right(),
                 Key::Up => editor.cursor_up(),

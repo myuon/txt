@@ -36,6 +36,7 @@ impl Events {
                             return;
                         }
                         if !ignore_exit_key.load(Ordering::Relaxed) && key == exit_key {
+                            ignore_exit_key.store(true, Ordering::Relaxed);
                             return;
                         }
                     }
@@ -55,6 +56,10 @@ impl Events {
             input_handle,
             tick_handle,
         }
+    }
+
+    pub fn exit(&self) -> bool {
+        self.ignore_exit_key.load(Ordering::Relaxed)
     }
 
     pub fn next(&self) -> Result<Event, mpsc::RecvError> {
