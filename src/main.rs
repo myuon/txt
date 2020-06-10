@@ -77,6 +77,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Key::Right => editor.cursor_right(),
                 Key::Up => editor.cursor_up(),
                 Key::Down => editor.cursor_down()?,
+                Key::Char(ch) => editor.insert_at_cursor(ch),
+                Key::Ctrl('s') => editor.save_file()?,
                 _ => (),
             }
         }

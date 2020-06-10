@@ -1,6 +1,6 @@
 use crate::line_buffer::LineBuffer;
 use std::error::Error;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::io::{BufReader, BufWriter};
 
@@ -59,11 +59,18 @@ impl FileBuffer {
         self.buffer.len()
     }
 
+    pub fn insert_at(&mut self, y: usize, x: usize, ch: char) {
+        self.buffer[y].insert(x, ch);
+    }
+
     pub fn write(&self) -> Result<(), Box<dyn Error>> {
-        let mut writer = BufWriter::new(File::open(&self.file_path)?);
+        let file = OpenOptions::new().write(true).open(&self.file_path)?;
+        let mut writer = BufWriter::new(file);
         for line in &self.buffer {
             writer.write(&line.to_string().into_bytes())?;
         }
+
+        writer.flush()?;
 
         Ok(())
     }

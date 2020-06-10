@@ -107,4 +107,16 @@ impl Editor {
             self.cursor.x += 1;
         }
     }
+
+    pub fn insert_at_cursor(&mut self, ch: char) {
+        let cursor = self.get_cursor();
+        self.file_buffer
+            .insert_at(cursor.y as usize, cursor.x as usize, ch);
+    }
+
+    pub fn save_file(&mut self) -> Result<(), Box<dyn Error>> {
+        self.file_buffer.write()?;
+
+        Ok(())
+    }
 }
