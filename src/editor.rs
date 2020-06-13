@@ -45,10 +45,6 @@ impl Editor {
     pub fn get_text(&self) -> Vec<String> {
         self.file_buffer
             .get_strings_between(self.index_start, self.index_end)
-            .into_iter()
-            // 0-width character
-            .map(|str| str.replace(" ", "\u{2800}"))
-            .collect()
     }
 
     pub fn set_editor_size(&mut self, width: u16, height: u16) {
@@ -57,7 +53,7 @@ impl Editor {
             self.height = height;
 
             self.index_start = 0;
-            self.index_end = height as usize;
+            self.index_end = (height as usize).min(self.file_buffer.len());
         }
     }
 
