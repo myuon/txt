@@ -29,8 +29,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     loop {
         write!(stdout, "{}{}", termion::clear::All, Goto(1, 1))?;
         for (index, text) in editor.get_text().into_iter().enumerate() {
+            write!(stdout, "{}", Goto(1, index as u16 + 1))?;
             write!(stdout, "{}", text)?;
-            write!(stdout, "{}", Goto(1, index as u16))?;
         }
 
         let cursor = editor.get_cursor();
