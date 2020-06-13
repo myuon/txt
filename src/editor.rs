@@ -111,6 +111,15 @@ impl Editor {
         self.cursor_right();
     }
 
+    pub fn delete_at_cursor(&mut self) {
+        let cursor = self.get_cursor();
+        if cursor.x > 0 {
+            self.file_buffer
+                .delete_at(cursor.y as usize, cursor.x as usize - 1);
+            self.cursor_left();
+        }
+    }
+
     pub fn save_file(&mut self) -> Result<(), Box<dyn Error>> {
         self.file_buffer.write()?;
 

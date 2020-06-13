@@ -63,6 +63,10 @@ impl FileBuffer {
         self.buffer[y].insert(x, ch);
     }
 
+    pub fn delete_at(&mut self, y: usize, x: usize) {
+        self.buffer[y].remove(x);
+    }
+
     pub fn write(&self) -> Result<(), Box<dyn Error>> {
         let file = OpenOptions::new().write(true).open(&self.file_path)?;
         let mut writer = BufWriter::new(file);

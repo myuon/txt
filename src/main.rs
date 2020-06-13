@@ -49,6 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 Key::Up => editor.cursor_up(),
                 Key::Down => editor.cursor_down()?,
                 Key::Char(ch) => editor.insert_at_cursor(ch),
+                Key::Backspace => editor.delete_at_cursor(),
                 Key::Ctrl('s') => editor.save_file()?,
                 _ => (),
             }
